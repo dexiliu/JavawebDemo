@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+
+<mapper namespace="dao.RoleDao">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>
+	<resultMap type="bean.Role" id="role">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="weight" property="weight" />
+	</resultMap>
+	
+	<sql id="columns">name, weight</sql>
+	<sql id="table">auth_role</sql>
+	
+	<insert id="insert" parameterType="bean.Role" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO <include refid="table" />(<include refid="columns" />)
+		VALUES (#{name}, #{weight})
+	</insert>
+	
+	<delete id="deleteById" parameterType="int">
+		DELETE FROM <include refid="table" />
+		WHERE id = #{id}
+	</delete>
+	
+	<update id="update" parameterType="bean.Role">
+		UPDATE <include refid="table" />
+		SET name = #{name},
+			weight = #{weight}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getById" parameterType="int" resultMap="role">
+		SELECT id, <include refid="columns" />
+		FROM <include refid="table" />
+		WHERE id = #{id}
+	</select>
+	
+	<select id="getAll" resultMap="role">
+		SELECT id, <include refid="columns" />
+		FROM <include refid="table" />
+		ORDER BY weight
+	</select>
+	
+	<select id="getByUserId" parameterType="int" resultMap="role">
+		SELECT r.*
+		FROM <include refid="table" /> r, auth_user_role ur
+		WHERE r.id=ur.role_id AND ur.user_id=#{value}
+	</select>
+
+</mapper>

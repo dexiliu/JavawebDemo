@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+
+<struts>
+	<constant name="struts.action.extension" value="do" />
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.multipart.maxSize" value="100000000000000000"/>
+	<constant name="struts.devMode" value="true" />
+	
+	<package name="authority" extends="struts-default">
+		<interceptors>
+			<interceptor name="onlineDemo" class="interceptor.OnlineDemoInterceptor" />
+			<interceptor-stack name="newStack">
+                <interceptor-ref name="defaultStack" />
+                <interceptor-ref name="onlineDemo" />
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="newStack" />
+		
+		<global-results>
+	        <result name="error403"  type="redirect">/page/403.htm</result>
+	        <result name="message">/page/message.jsp</result>
+	    </global-results>
+		<global-exception-mappings>
+        	<exception-mapping result="error403" exception="org.apache.shiro.authz.UnauthorizedException">
+        	</exception-mapping>
+        	<exception-mapping result="error403" exception="org.apache.shiro.authz.AuthorizationException">
+        	</exception-mapping>
+    	</global-exception-mappings>
+    	
+    	<action name="index" method="index" class="action.user.UserAction">
+    		<result name="index">/page/login.jsp</result>
+    	</action>
+    	<action name="login" method="login" class="action.user.UserAction">
+    		<result name="login" type="redirect">/student/list.do</result>
+   			<result name="loginInput">/page/login.jsp</result>
+    	</action>
+    	<action name="logout" method="logout" class="action.user.UserAction">
+    		<result name="logout" type="redirect">/index.do</result>
+    	</action>
+	</package>
+    
+	<include file="struts/*.xml"/>
+</struts>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<decorators defaultdir="/page/decorator">
+	<!-- Any urls that are excluded will never be decorated by Sitemesh -->
+	<excludes>
+        <pattern>*aabbccdd*</pattern>
+    </excludes>
+    
+	<!-- 如果例外页面使用不好的话，可以采用模板应用范围控制来决绝问题 -->
+	<decorator name="main" page="main.jsp">
+	    <pattern>/*.do*</pattern>
+	</decorator>
+</decorators>

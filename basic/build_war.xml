@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="remote" default="startuptomcat" basedir=".">
+	<property name="host" value="192.168.1.211" />
+	<property name="user" value="root" />
+	<property name="password" value="123" />
+	<property name="tomcat.home" value="/usr/local/tomcat" />
+	<property name="dist.dir" value="${basedir}\dist" />
+	<property name="project.name" value="basic" />
+	
+	<!-- 获取当前时间，项目备份时使用 -->
+	<tstamp>
+	    <format property="time" pattern="yyyy.MM.dd-HH:mm" locale="us"/>
+	</tstamp>
+	
+	<target name="init" description="初始化环境">
+	    <echo message="初始化目录" />
+	    <delete dir="${dist.dir}" />
+	    <mkdir dir="${dist.dir}" />
+	</target>
+	<target name="package" depends="init" description="将项目打成war包">
+	    <echo message="将项目打成war包" />
+	    <war basedir="${basedir}/WebContent" destfile="${dist.dir}/${project.name}.war" 
+	    	webxml="${basedir}\WebContent\WEB-INF\web.xml">
+	    	<classes dir="${basedir}/build/classes"/>  
+	    </war>
+	</target>
+	<target name="backup" depends="package" description="备份线上项目">
+	    <echo message="备份线上项目" />
+	    <sshexec host="${host}" username="${user}" password="${password}" trust="yes"
+		command="cp -r ${tomcat.home}/webapps/${project.name} 
+			${tomcat.home}/backup/${project.name}-${time}" />
+	</target>
+	<target name="shutdowntomcat" depends="backup" description="关闭tomcat">
+	    <echo message="关闭tomcat" />
+	    <sshexec host="${host}" username="${user}" password="${password}" trust="yes"
+		command="${tomcat.home}/bin/shutdown.sh" />
+	</target>
+	<target name="delete" depends="shutdowntomcat" description="删除线上项目">
+	    <echo message="删除线上项目" />
+	    <sshexec host="${host}" username="${user}" password="${password}" trust="yes"
+		command="rm -rf ${tomcat.home}/webapps/${project.name} 
+			 rm -rf ${tomcat.home}/webapps/${project.name}.war" />
+	</target>
+	<target name="update" depends="delete" description="上传war包">
+	    <echo message="上传war包" />
+	    <scp file="${dist.dir}/${project.name}.war" trust="true" verbose="true" 
+		todir="${user}:${password}@${host}:${tomcat.home}/webapps/" />
+	</target>
+	<target name="startuptomcat" depends="update" description="启动tomcat">
+	    <echo message="启动tomcat" />
+	    <sshexec host="${host}" username="${user}" password="${password}" trust="yes"
+		command="${tomcat.home}/bin/startup.sh" />
+	</target>
+</project>

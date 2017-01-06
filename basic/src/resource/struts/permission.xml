@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="permission" namespace="/permission" extends="authority">
+    	<action name="*" method="{1}" class="action.auth.PermissionAction">
+    		<result name="list">/page/permission/perm_list.jsp</result>
+    		<result name="add">/page/permission/perm_edit.jsp</result>
+    		<result name="edit">/page/permission/perm_edit.jsp</result>
+    		<result name="input">/page/permission/perm_edit.jsp</result>
+    		<result type="redirect">/permission/list.do</result>
+    	</action>
+    </package>
+</struts>

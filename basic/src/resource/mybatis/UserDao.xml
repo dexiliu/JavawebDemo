@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper
+    PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">  
+
+<mapper namespace="dao.UserDao">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache"></cache>
+	<resultMap type="bean.User" id="user">
+		<id column="id" property="id" />
+		<result column="username" property="username" />
+		<result column="password" property="password" />
+		<result column="name" property="name" />
+	</resultMap>
+	
+	<sql id="columns">username, password, name</sql>
+	<sql id="table">auth_user</sql>
+	
+	<insert id="insert" parameterType="bean.User" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO <include refid="table" />(<include refid="columns" />)
+		VALUES (#{username}, #{password}, #{name})
+	</insert>
+	
+	<update id="update" parameterType="bean.User">
+		UPDATE <include refid="table" />
+		SET username = #{username},
+			password = #{password},
+			name = #{name}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getById" parameterType="int" resultMap="user">
+		SELECT id, <include refid="columns" />
+		FROM <include refid="table" />
+		WHERE id = #{id}
+	</select>
+	
+	<select id="getByUserName" parameterType="string" resultMap="user">
+		SELECT id, <include refid="columns" />
+		FROM <include refid="table" />
+		WHERE username = #{username}
+	</select>
+	
+	<sql id="sql_where">
+		<where>
+			<if test="name!=null and name!=''">
+			AND (username like '%${name}%' or name like '%${name}%')
+			</if>
+		</where>
+	</sql>
+	
+	<select id="getByQueryBean" parameterType="bean.querypage.UserQp" resultMap="user">
+		SELECT id, <include refid="columns" /> 
+		FROM <include refid="table" /> 
+		<include refid="sql_where"/> 
+		LIMIT #{start}, #{size}
+	</select>
+	
+	<select id="getCountByQueryBean" parameterType="bean.querypage.UserQp" resultType="long">
+		SELECT COUNT(*) 
+		FROM <include refid="table" /> 
+		<include refid="sql_where"/>
+	</select>
+</mapper>

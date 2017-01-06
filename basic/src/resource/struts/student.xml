@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="student" namespace="/student" extends="authority">
+    	<action name="*" method="{1}" class="action.student.StudentAction">
+    		<result name="list">/page/student/student_list.jsp</result>
+    		<result name="add">/page/student/student_edit.jsp</result>
+    		<result name="edit">/page/student/student_edit.jsp</result>
+    		<result name="input">/page/student/student_edit.jsp</result>
+    		<result type="redirect">/student/list.do</result>
+    	</action>
+    </package>
+</struts>
